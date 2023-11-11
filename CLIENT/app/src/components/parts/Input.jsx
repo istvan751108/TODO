@@ -1,21 +1,36 @@
+// Input.jsx
+
 import React from "react";
 
-const Input = ({ name, label, errorMsg = "", onChange, type = "text" }) => {
+const Input = ({ name, label, errorMsg = "", onChange, type = "text", options }) => {
   return (
     <>
       <label htmlFor={name} className="form-label">
         {label}
       </label>
-      <input
-        type={type}
-        name={name}
-        id={name}
-        onChange={onChange}
-        className={"form-control" + (errorMsg.length > 0 ? "is-invalid" : "")}
-      />
-      {errorMsg.length > 0 && (
-        <span className="invalid-feedback">{errorMsg}</span>
+      {type === "select" ? (
+        <select
+          name={name}
+          id={name}
+          onChange={onChange}
+          className={"form-control" + (errorMsg.length > 0 ? " is-invalid" : "")}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          name={name}
+          id={name}
+          onChange={onChange}
+          className={"form-control" + (errorMsg.length > 0 ? " is-invalid" : "")}
+        />
       )}
+      {errorMsg.length > 0 && <span className="invalid-feedback">{errorMsg}</span>}
     </>
   );
 };
@@ -30,14 +45,13 @@ export function Textarea({ name, label, onChange, errorMsg = "" }) {
         name={name}
         id={name}
         onChange={onChange}
-        className={"form-control" + (errorMsg.length > 0 ? "is-invalid" : "")}
+        className={"form-control" + (errorMsg.length > 0 ? " is-invalid" : "")}
         cols="30"
         rows="10"
       ></textarea>
-      {errorMsg.length > 0 && (
-        <span className="invalid-feedback">{errorMsg}</span>
-      )}
+      {errorMsg.length > 0 && <span className="invalid-feedback">{errorMsg}</span>}
     </>
   );
 }
+
 export default Input;

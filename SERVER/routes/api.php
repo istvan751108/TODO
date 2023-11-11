@@ -20,21 +20,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('/contact', function(Request $request){
+Route::post('/todoup', function(Request $request){
 
     try {
         $validated = $request->validate([
-            'name' => 'required|min:4|max:40',
-            'email' => 'required|email',
-            'phone' => 'required|min:9|max:20',
-            'subject' => 'required|min:4|max:40',
-            'message' => 'required|min:10|max:600',
+            'name' => 'required|min:4|max:20',
+            'priority' => 'required',
+            'date' => 'required',
+            'message' => 'required|min:10|max:300',
         ]);
     } catch ( ValidationException $ex){
         return response(['status'=>'error', 'errors'=>$ex->errors()], 422);
     }
     
-    //Mail::to('istvan751108@gmail.com')->send( new ContactMail($validated) );
     return response([]);
 
 });

@@ -18,7 +18,7 @@ const TodoUp = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch("http://127.0.0.1:8000/api/contact", {
+        fetch("http://127.0.0.1:8000/api/todoup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -33,13 +33,11 @@ const TodoUp = () => {
                 return response.json()
         })
         .then( () => {
-            //sikeres
             setSuccess(true)
             setErrors(initialErrors)
         })
 
         .catch( async response => {
-            //hiba
             const err = await response.json();
             console.log( err );
             setErrors(err.errors)
@@ -68,9 +66,19 @@ const TodoUp = () => {
                 </div>
 
                 <div className="col-12 col-lg-6">
-                    <Input name={"priority"} label="Add meg a feladat priorítását!" onChange={handleChange}/>
-                    <Error collection={errors} index="priority"/>
-                </div>
+          <Input
+            name={"priority"}
+            label="Add meg a feladat priorítását!"
+            onChange={handleChange}
+            type="select"
+            options={[
+              { label: "Normál", value: "normal" },
+              { label: "Sürgős", value: "urgent" },
+              { label: "Extra sürgős", value: "extraUrgent" },
+            ]}
+          />
+          <Error collection={errors} index="priority" />
+        </div>
 
                 <div className="col-12 col-lg-6">
                     <Input name={"date"} type="date" label="Add meg a feladat határidejét" onChange={handleChange}/>
