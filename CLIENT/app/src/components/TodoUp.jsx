@@ -11,8 +11,21 @@ const TodoUp = () => {
     const [errors, setErrors] = useState(initialErrors)
     const [success, setSuccess] = useState( false )
 
+    const [options, setOptions] = useState([
+        { label: "", value: "" },
+        { label: "Normál", value: "normal" },
+        { label: "Sürgős", value: "urgent" },
+        { label: "Extra sürgős", value: "extraUrgent" }
+    ]);
 
-    const handleChange = e => {
+    const handleChange = (e) => {
+        if (data.priority === "") {
+            setOptions([
+                { label: "", value: "" },
+                ...options.slice(1)
+            ]);
+        }
+
         setData( {...data, [e.target.name]: e.target.value} )
     }
 
@@ -69,11 +82,7 @@ const TodoUp = () => {
             label="Add meg a feladat priorítását!"
             onChange={handleChange}
             type="select"
-            options={[
-              { label: "Normál", value: "normal" },
-              { label: "Sürgős", value: "urgent" },
-              { label: "Extra sürgős", value: "extraUrgent" },
-            ]}
+            options={options}
             value={data.priority}
           />
           <Error collection={errors} index="priority" />
