@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
@@ -15,24 +16,5 @@ use Illuminate\Validation\ValidationException;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-
-Route::post('/todoup', function(Request $request){
-
-    try {
-        $validated = $request->validate([
-            'name' => 'required|min:4|max:20',
-            'priority' => 'required',
-            'date' => 'required',
-            'message' => 'required|min:10|max:300',
-        ]);
-    } catch ( ValidationException $ex){
-        return response(['status'=>'error', 'errors'=>$ex->errors()], 422);
-    }
-    
-    return response([]);
-
-});
+Route::post('/todoup', [TodoController::class, 'store']);
+Route::get('/todoup', [TodoController::class, 'index']);

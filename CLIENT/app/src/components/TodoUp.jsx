@@ -21,9 +21,7 @@ const TodoUp = () => {
         fetch("http://127.0.0.1:8000/api/todoup", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "X-XSRF-Token": Cookie.get("XSRF-TOKEN"),
-            },
+                "Content-Type": "application/json",            },
             body: JSON.stringify(data),
         })
         .then( response => {
@@ -45,12 +43,12 @@ const TodoUp = () => {
         })
     };
 
-    useEffect(() => {
-        fetch("/sanctum/csrf-cookie");
-    }, []);
-
-    const Error = ( {collection, index} ) => collection[index].length > 0 ? <span className="text-danger">{errors.name}</span> : ''
-    
+    const Error = ({ collection, index }) => (
+        collection[index] && collection[index].length > 0 ? (
+          <span className="text-danger">{collection[index][0]}</span>
+        ) : ''
+      );
+      
     return (
         <PageLayout title="Teendők felvitele">
             { success && <div className="alert alert-success my-3">Sikeres felvitel!</div>}
@@ -76,6 +74,7 @@ const TodoUp = () => {
               { label: "Sürgős", value: "urgent" },
               { label: "Extra sürgős", value: "extraUrgent" },
             ]}
+            value={data.priority}
           />
           <Error collection={errors} index="priority" />
         </div>
