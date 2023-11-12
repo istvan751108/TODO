@@ -41,4 +41,24 @@ class TodoController extends Controller
             return response()->json(['error' => 'Sikertelen törlés'], 500);
         }
     }
+
+    public function update(Request $request, $id)
+    {
+        $todo = Todoup::find($id);
+
+        if (!$todo) {
+            return response()->json(['message' => 'Teendő nem található'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'priority' => 'required|in:normal,urgent,extraUrgent',
+            'date' => 'required|date',
+            'message' => 'required',
+        ]);
+
+        $todo->update($validatedData);
+
+        return response()->json(['message' => 'Sikeres módosítás']);
+    }
 }

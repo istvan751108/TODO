@@ -19,3 +19,4 @@ use Illuminate\Validation\ValidationException;
 Route::post('/todoup', [TodoController::class, 'store']);
 Route::get('/todoup', [TodoController::class, 'index']);
 Route::delete('/todoup/{id}', [TodoController::class, 'destroy']);
+Route::put('/todoup/{id}', [TodoController::class, 'update']);
