@@ -13,8 +13,3 @@ npm install react-icons
 npm install --save react-modal
 npm install react-bootstrap@next
 Set-Location -Path ..\..
-
-# Végrehajtja a Laravel adatbázis migrációkat
-Set-Location -Path .\server
-php artisan migrate
-Set-Location -Path ..\..
