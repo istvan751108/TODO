@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import PageLayout from "./parts/PageLayout";
 import Input, { Textarea } from "./parts/Input";
-import Cookie from "js-cookie";
 
-const TodoUp = () => {
+const TodoUp = ({ onSuccess }) => {
   const initialData = { name: "", priority: "", date: "", message: "" };
   const [data, setData] = useState(initialData);
   const initialErrors = initialData;
@@ -39,10 +37,8 @@ const TodoUp = () => {
         else return response.json();
       })
       .then(() => {
-        setSuccess(true);
-        setErrors(initialErrors);
+        onSuccess();
       })
-
       .catch(async (response) => {
         const err = await response.json();
         console.log(err);
@@ -59,7 +55,7 @@ const TodoUp = () => {
     );
 
   return (
-    <PageLayout title="Teendők felvitele">
+    <div>
       {success && (
         <div className="alert alert-success my-3">Sikeres felvitel!</div>
       )}
@@ -108,7 +104,7 @@ const TodoUp = () => {
           <button className="btn btn-success">Rögzítés</button>
         </div>
       </form>
-    </PageLayout>
+    </div>
   );
 };
 

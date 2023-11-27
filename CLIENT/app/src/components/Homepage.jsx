@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import PageLayout from "./parts/PageLayout";
 import { BiTrash, BiEdit } from "react-icons/bi";
 import { BsCircleFill } from "react-icons/bs";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Input, { Textarea } from "./parts/Input";
+import EditTodoModal from "./parts/EditTodoModal";
+import TodoUpModal from "./parts/TodoUpModal";
 
 function Homepage() {
   const [todoList, setTodoList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showTodoUpModal, setShowTodoUpModal] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
 
   const initialData = { name: "", priority: "", date: "", message: "" };
@@ -86,30 +86,24 @@ function Homepage() {
     }
   };
 
-  useEffect(() => {
-    if (selectedTodo) {
-      // Ha van kiválasztott teendő, beállítjuk a data állapotot az adataival
-      setData({
-        name: selectedTodo.name,
-        priority: selectedTodo.priority,
-        date: selectedTodo.date,
-        message: selectedTodo.message,
-      });
-    }
-  }, [selectedTodo]);
-
-  const handleEdit = (todo) => {
-    setSelectedTodo(todo);
-
-    // Beállítjuk a data állapotot a kiválasztott teendő adataival
+  const setFormData = (todo) => {
     setData({
       name: todo.name,
       priority: todo.priority,
       date: todo.date,
       message: todo.message,
     });
+  };
 
-    // Megnyitjuk a modális ablakot
+  useEffect(() => {
+    if (selectedTodo) {
+      setFormData(selectedTodo);
+    }
+  }, [selectedTodo]);
+
+  const handleEdit = (todo) => {
+    setSelectedTodo(todo);
+    setFormData(todo);
     setShowModal(true);
   };
 
@@ -117,6 +111,49 @@ function Homepage() {
     setShowModal(false);
     setSelectedTodo(null);
   };
+
+  const handleTodoUpModalOpen = () => {
+    setShowTodoUpModal(true);
+  };
+
+  const handleTodoUpModalClose = () => {
+    setShowTodoUpModal(false);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/todoup");
+
+        if (!response.ok) {
+          throw new Error(`HTTP hiba! Státuszkód: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const formattedData = data.map((item) => ({
+          ...item,
+          priority: {
+            normal: "Normál",
+            urgent: "Sürgős",
+            extraUrgent: "Extra sürgős",
+          }[item.priority],
+        }));
+
+        setTodoList(data);
+      } catch (error) {
+        console.error("Hiba történt a kérés során:", error.message);
+      }
+    };
+
+    const handleTodoUpModalClose = async () => {
+      setShowTodoUpModal(false);
+      await fetchData(); // Frissítsük az adatokat az ablak bezárása után
+    };
+
+    if (!showTodoUpModal) {
+      fetchData();
+    }
+  }, [showTodoUpModal]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -141,7 +178,6 @@ function Homepage() {
       setErrors(initialErrors);
       handleModalClose();
 
-      // Az oldal újratöltése a módosítás után
       location.reload();
     } catch (error) {
       const responseData = await error.json();
@@ -179,10 +215,13 @@ function Homepage() {
           <span>Extra sürgős tevékenység</span>
         </div>
       </div>
-      <div>
+      <div className="d-flex justify-content-between">
         <b>
           <u>Aktuális teendők listája:</u>
         </b>
+        <button className="btn btn-primary" onClick={handleTodoUpModalOpen}>
+          Új Teendő Felvitele
+        </button>
       </div>
       <div className="col-12">
         <ul>
@@ -217,63 +256,19 @@ function Homepage() {
           ))}
         </ul>
       </div>
-      <Modal show={showModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Szerkesztés</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form action="" method="put" className="row g-3">
-            <div className="col-12 col-lg-6">
-              <Input
-                name={"name"}
-                label="Add meg a feladat nevét!"
-                onChange={handleChange}
-                value={data.name}
-              />
-              <Error collection={errors} index="name" />
-            </div>
-
-            <div className="col-12 col-lg-6">
-              <Input
-                name={"priority"}
-                label="Add meg a feladat priorítását!"
-                onChange={handleChange}
-                type="select"
-                options={options}
-                value={data.priority}
-              />
-              <Error collection={errors} index="priority" />
-            </div>
-
-            <div className="col-12 col-lg-6">
-              <Input
-                name={"date"}
-                type="date"
-                label="Add meg a feladat határidejét"
-                onChange={handleChange}
-              />
-              <Error collection={errors} index="date" />
-            </div>
-
-            <div className="col-12">
-              <Textarea
-                name={"message"}
-                label="Add meg a feladat leírását"
-                onChange={handleChange}
-              />
-              <Error collection={errors} index="message" />
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Mégse
-          </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Mentés
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <EditTodoModal
+        show={showModal}
+        handleClose={handleModalClose}
+        data={data}
+        handleChange={handleChange}
+        errors={errors}
+        handleSave={handleSave}
+        options={options}
+      />
+      <TodoUpModal
+        show={showTodoUpModal}
+        handleClose={handleTodoUpModalClose}
+      />
     </PageLayout>
   );
 }

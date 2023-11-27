@@ -46,8 +46,8 @@ export function Textarea({ name, label, onChange, errorMsg = "" }) {
         id={name}
         onChange={onChange}
         className={"form-control" + (errorMsg.length > 0 ? " is-invalid" : "")}
-        cols="30"
-        rows="10"
+        cols="100"
+        rows="3"
       ></textarea>
       {errorMsg.length > 0 && <span className="invalid-feedback">{errorMsg}</span>}
     </>
